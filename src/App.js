@@ -1,58 +1,81 @@
-import React from 'react';
-import logo from './logo.svg';
-import { Counter } from './features/counter/Counter';
-import './App.css';
+import React, { useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
 
-function App() {
+import { addTodo, deleteTodo, updateTodo } from "./features/todo/todoSlice";
+
+const App = () => {
+  const [newTodo, setnewTodo] = useState("");
+  const [isEditSelected, setIsEditSelected] = useState(false);
+  const [idToEdit, setIdToEdit] = useState(null);
+  const [editedTitle, setEditedTitle] = useState("");
+
+  const dispatch = useDispatch();
+  const todos = useSelector((state) => state.todos);
+
+  const handleClickEdit = (id, title) => {
+    setIsEditSelected(!isEditSelected);
+    setIdToEdit(id);
+    setEditedTitle(title);
+  };
+
+  const handleClickAdd = () => {
+    dispatch(addTodo(newTodo));
+    setnewTodo("");
+  };
+
+  const handleChangeAdd = (e) => {
+    setnewTodo(e.target.value);
+  };
+
+  const handleChangeEdit = (e) => {
+    setEditedTitle(e.target.value);
+  };
+
+  const handleClickUpdate = () => {
+    dispatch(updateTodo({ id: idToEdit, title: editedTitle }));
+    setIsEditSelected(!isEditSelected);
+  };
+
+  const renderedTodo = todos.map((todo) => (
+    <main key={todo.id}>
+      <h2>{todo.title}</h2>
+      {todo.todoState ? <p>complete</p> : <p>incomplete</p>}
+
+      <button onClick={() => handleClickEdit(todo.id, todo.title)}>edit</button>
+      <button onClick={() => dispatch(deleteTodo(todo.id))}>delete</button>
+    </main>
+  ));
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <Counter />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <span>
-          <span>Learn </span>
-          <a
-            className="App-link"
-            href="https://reactjs.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            React
-          </a>
-          <span>, </span>
-          <a
-            className="App-link"
-            href="https://redux.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Redux
-          </a>
-          <span>, </span>
-          <a
-            className="App-link"
-            href="https://redux-toolkit.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Redux Toolkit
-          </a>
-          ,<span> and </span>
-          <a
-            className="App-link"
-            href="https://react-redux.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            React Redux
-          </a>
-        </span>
-      </header>
+    <div style={{ margin: "1rem" }}>
+      {isEditSelected ? (
+        <>
+          <input
+            type={"text"}
+            onChange={handleChangeEdit}
+            value={editedTitle}
+          />
+          <button type="button" onClick={handleClickUpdate}>
+            Update
+          </button>
+        </>
+      ) : (
+        <>
+          <input
+            type={"text"}
+            placeholder={"add a todo..."}
+            onChange={handleChangeAdd}
+            value={newTodo}
+          />
+          <button type="button" onClick={handleClickAdd}>
+            Add
+          </button>
+        </>
+      )}
+
+      {renderedTodo}
     </div>
   );
-}
+};
 
 export default App;
