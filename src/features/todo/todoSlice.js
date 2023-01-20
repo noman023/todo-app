@@ -14,7 +14,7 @@ const initialState = [
   },
 ];
 
-const counterSlice = createSlice({
+const todoSlice = createSlice({
   name: "todos",
   initialState,
   reducers: {
@@ -45,6 +45,6 @@ const counterSlice = createSlice({
   },
 });
 
-export const { addTodo, deleteTodo, updateTodo } = counterSlice.actions;
+export const { addTodo, deleteTodo, updateTodo } = todoSlice.actions;
 
-export default counterSlice.reducer;
+export default todoSlice.reducer;

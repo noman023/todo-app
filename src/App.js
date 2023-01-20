@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 
+import styled from "./app.module.css";
 import { addTodo, deleteTodo, updateTodo } from "./features/todo/todoSlice";
 
 const App = () => {
@@ -19,15 +20,17 @@ const App = () => {
   };
 
   const handleClickAdd = () => {
-    dispatch(addTodo(newTodo));
-    setnewTodo("");
+    if (newTodo) {
+      dispatch(addTodo(newTodo));
+      setnewTodo("");
+    }
   };
 
   const handleChangeAdd = (e) => {
     setnewTodo(e.target.value);
   };
 
-  const handleChangeEdit = (e) => {
+  const handleChangeUpdate = (e) => {
     setEditedTitle(e.target.value);
   };
 
@@ -37,44 +40,44 @@ const App = () => {
   };
 
   const renderedTodo = todos.map((todo) => (
-    <main key={todo.id}>
-      <h2>{todo.title}</h2>
-      {todo.todoState ? <p>complete</p> : <p>incomplete</p>}
+    <section key={todo.id} className={styled.todoSection}>
+      <h3>{todo.title}</h3>
 
-      <button onClick={() => handleClickEdit(todo.id, todo.title)}>edit</button>
-      <button onClick={() => dispatch(deleteTodo(todo.id))}>delete</button>
-    </main>
+      <button
+        style={{ backgroundColor: "#298fcf", borderColor: "#298fcf" }}
+        onClick={() => handleClickEdit(todo.id, todo.title)}
+      >
+        edit
+      </button>
+      <button
+        style={{ backgroundColor: "#eb1111", borderColor: "#eb1111" }}
+        onClick={() => dispatch(deleteTodo(todo.id))}
+      >
+        delete
+      </button>
+    </section>
   ));
 
   return (
-    <div style={{ margin: "1rem" }}>
-      {isEditSelected ? (
-        <>
-          <input
-            type={"text"}
-            onChange={handleChangeEdit}
-            value={editedTitle}
-          />
-          <button type="button" onClick={handleClickUpdate}>
-            Update
-          </button>
-        </>
-      ) : (
-        <>
-          <input
-            type={"text"}
-            placeholder={"add a todo..."}
-            onChange={handleChangeAdd}
-            value={newTodo}
-          />
-          <button type="button" onClick={handleClickAdd}>
-            Add
-          </button>
-        </>
-      )}
+    <main>
+      <section className={styled.inputSection}>
+        <input
+          type={"text"}
+          placeholder={"add a todo..."}
+          onChange={isEditSelected ? handleChangeUpdate : handleChangeAdd}
+          value={isEditSelected ? editedTitle : newTodo}
+        />
+
+        <button
+          type="button"
+          onClick={isEditSelected ? handleClickUpdate : handleClickAdd}
+        >
+          {isEditSelected ? "Update" : "Add"}
+        </button>
+      </section>
 
       {renderedTodo}
-    </div>
+    </main>
   );
 };
 
